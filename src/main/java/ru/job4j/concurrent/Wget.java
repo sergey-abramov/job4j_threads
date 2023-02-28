@@ -3,16 +3,16 @@ package ru.job4j.concurrent;
 public class Wget {
     public static void main(String[] args) {
         Thread first = new Thread(
-        () -> {
-            try {
-                for (int i = 0; i < 100; i++) {
-                    System.out.print("\rLoading : " + i + "%");
-                    Thread.sleep(1000);
+                () -> {
+                    try {
+                        for (int i = 0; i < 100; i++) {
+                            System.out.print("\rLoading : " + i + "%");
+                            Thread.sleep(1000);
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         );
         first.start();
         System.out.println("Main");
