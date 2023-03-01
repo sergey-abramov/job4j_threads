@@ -19,16 +19,20 @@ public class Wget implements Runnable {
     @Override
     public void run() {
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream("pom_tmp.xml")) {
+             FileOutputStream fileOutputStream = new FileOutputStream(saveFile(url))) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
+            int downloadData = 0;
+            Timestamp first = new Timestamp(System.currentTimeMillis());
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-                Timestamp first = new Timestamp(System.currentTimeMillis());
+                downloadData += bytesRead;
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
                 Timestamp second = new Timestamp(System.currentTimeMillis());
-                int time = second.getNanos() - first.getNanos();
-                if (time < speed) {
-                    sleep(time);
+                long timeInterval = second.getTime() - first.getTime();
+                if (downloadData >= speed && timeInterval < 1000) {
+                    sleep(1000 - timeInterval);
+                    downloadData = 0;
+                    first = new Timestamp(System.currentTimeMillis());
                 }
             }
         } catch (IOException e) {
@@ -36,7 +40,7 @@ public class Wget implements Runnable {
         }
     }
 
-    public void sleep(int time) {
+    public void sleep(long time) {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
@@ -44,8 +48,13 @@ public class Wget implements Runnable {
         }
     }
 
+    public String saveFile(String url) {
+        String[] s = url.split("//")[1].split("/");
+        return s[s.length - 1];
+    }
+
     public static void main(String[] args) throws InterruptedException {
-        if (args.length == 0) {
+        if (args.length < 1) {
             throw new IllegalArgumentException("Нужно указать аргументы: ссылку и скорость");
         }
         String url = args[0];
