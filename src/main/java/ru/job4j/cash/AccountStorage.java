@@ -13,36 +13,22 @@ public class AccountStorage {
     private final HashMap<Integer, Account> accounts = new HashMap<>();
 
     public boolean add(Account account) {
-        boolean rsl = false;
         synchronized (accounts) {
             accounts.putIfAbsent(account.id(), account);
-            if (accounts.containsKey(account.id())) {
-                rsl = true;
-            }
+            return accounts.containsKey(account.id());
         }
-        return rsl;
     }
 
     public boolean update(Account account) {
-        boolean rsl = false;
         synchronized (accounts) {
-            accounts.put(account.id(), account);
-            if (accounts.containsValue(account)) {
-                rsl = true;
-            }
+            return accounts.replace(account.id(), accounts.get(account.id()), account);
         }
-        return rsl;
     }
 
     public boolean delete(int id) {
-        boolean rsl = false;
         synchronized (accounts) {
-            accounts.remove(id);
-            if (!accounts.containsKey(id)) {
-                rsl = true;
-            }
+            return accounts.remove(id, accounts.get(id));
         }
-        return rsl;
     }
 
     public Optional<Account> getById(int id) {
@@ -51,18 +37,14 @@ public class AccountStorage {
         }
     }
 
-    public synchronized boolean transfer(int fromId, int toId, int amount) {
-        boolean rsl = false;
-        synchronized (accounts) {
-            Account first = new Account(fromId, accounts.get(fromId).amount() - amount);
-            Account second = new Account(toId, accounts.get(toId).amount() + amount);
-            accounts.replace(fromId, first);
-            accounts.replace(toId, second);
-            if (accounts.get(fromId).amount() == first.amount()
-                    && accounts.get(toId).amount() == second.amount()) {
-                rsl = true;
-            }
+    public boolean transfer(int fromId, int toId, int amount) {
+        if (getById(fromId).isEmpty() && getById(toId).isEmpty()) {
+            throw new IllegalArgumentException("Аккаунт с таким ID не существует");
         }
-        return rsl;
+        if (getById(fromId).get().amount() < amount) {
+            throw new IllegalArgumentException("Не достаточно средств");
+        }
+        return update(new Account(fromId, getById(fromId).get().amount() - amount))
+                && update(new Account(toId, getById(toId).get().amount() + amount));
     }
 }
