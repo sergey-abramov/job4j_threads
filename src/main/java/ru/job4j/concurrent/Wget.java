@@ -23,17 +23,18 @@ public class Wget implements Runnable {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
             int downloadData = 0;
-            Timestamp first = new Timestamp(System.currentTimeMillis());
+            long first = new Timestamp(System.currentTimeMillis()).getTime();
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 downloadData += bytesRead;
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
-                Timestamp second = new Timestamp(System.currentTimeMillis());
-                long timeInterval = second.getTime() - first.getTime();
-                if (downloadData >= speed && timeInterval < 1000) {
-                    sleep(1000 - timeInterval);
-                    downloadData = 0;
-                    first = new Timestamp(System.currentTimeMillis());
+                if (downloadData >= speed) {
+                    long timeInterval = new Timestamp(System.currentTimeMillis()).getTime() - first;
+                    if (timeInterval < 1000) {
+                        sleep(1000 - timeInterval);
+                    }
                 }
+                downloadData = 0;
+                first = new Timestamp(System.currentTimeMillis()).getTime();
             }
         } catch (IOException e) {
             e.printStackTrace();
