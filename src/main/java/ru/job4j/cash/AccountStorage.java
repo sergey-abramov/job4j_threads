@@ -4,6 +4,7 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Optional;
 
 @ThreadSafe
@@ -14,8 +15,7 @@ public class AccountStorage {
 
     public boolean add(Account account) {
         synchronized (accounts) {
-            accounts.putIfAbsent(account.id(), account);
-            return accounts.containsKey(account.id());
+            return Objects.equals(accounts.putIfAbsent(account.id(), account), account);
         }
     }
 
@@ -38,13 +38,15 @@ public class AccountStorage {
     }
 
     public boolean transfer(int fromId, int toId, int amount) {
-        if (getById(fromId).isEmpty() && getById(toId).isEmpty()) {
+        Optional<Account> from = getById(fromId);
+        Optional<Account> to = getById(toId);
+        if (from.isEmpty() && to.isEmpty()) {
             throw new IllegalArgumentException("Аккаунт с таким ID не существует");
         }
-        if (getById(fromId).get().amount() < amount) {
+        if (from.get().amount() < amount) {
             throw new IllegalArgumentException("Не достаточно средств");
         }
-        return update(new Account(fromId, getById(fromId).get().amount() - amount))
-                && update(new Account(toId, getById(toId).get().amount() + amount));
+        return update(new Account(fromId, from.get().amount() - amount))
+                && update(new Account(toId, to.get().amount() + amount));
     }
 }
