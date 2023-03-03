@@ -34,6 +34,5 @@ public class ParallelSearch {
         second.start();
         second.join();
         consumer.join();
-
     }
 }
