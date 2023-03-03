@@ -32,9 +32,9 @@ public class Wget implements Runnable {
                     if (timeInterval < 1000) {
                         sleep(1000 - timeInterval);
                     }
+                    downloadData = 0;
+                    first = new Timestamp(System.currentTimeMillis()).getTime();
                 }
-                downloadData = 0;
-                first = new Timestamp(System.currentTimeMillis()).getTime();
             }
         } catch (IOException e) {
             e.printStackTrace();
