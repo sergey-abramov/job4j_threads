@@ -44,19 +44,4 @@ public class SimpleBlockingQueue<T> {
             return queue.isEmpty();
         }
     }
-
-    public void offerWithTry(T value) {
-            synchronized (this) {
-                while (queue.size() >= size) {
-                   try {
-                       this.wait();
-                   } catch (InterruptedException e) {
-                       Thread.currentThread().interrupt();
-                   }
-                }
-                this.notifyAll();
-                queue.add(value);
-            }
-    }
-
 }
