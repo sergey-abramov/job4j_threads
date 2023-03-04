@@ -17,14 +17,10 @@ public class SimpleBlockingQueue<T> {
         this.size = size;
     }
 
-    public void offer(T value) {
+    public void offer(T value) throws InterruptedException {
         synchronized (this) {
             while (queue.size() >= size) {
-                try {
-                    this.wait();
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+                this.wait();
             }
             this.notifyAll();
             queue.add(value);
@@ -47,6 +43,20 @@ public class SimpleBlockingQueue<T> {
         synchronized (this) {
             return queue.isEmpty();
         }
+    }
+
+    public void offerWithTry(T value) {
+            synchronized (this) {
+                while (queue.size() >= size) {
+                   try {
+                       this.wait();
+                   } catch (InterruptedException e) {
+                       Thread.currentThread().interrupt();
+                   }
+                }
+                this.notifyAll();
+                queue.add(value);
+            }
     }
 
 }
