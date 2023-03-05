@@ -35,5 +35,4 @@ public class ParallelSearch {
         consumer.interrupt();
         consumer.join();
     }
-
 }
