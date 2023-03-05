@@ -4,7 +4,6 @@ import net.jcip.annotations.GuardedBy;
 import net.jcip.annotations.ThreadSafe;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.Optional;
 
 @ThreadSafe
@@ -15,7 +14,7 @@ public class AccountStorage {
 
     public boolean add(Account account) {
         synchronized (accounts) {
-            return Objects.equals(accounts.putIfAbsent(account.id(), account), account);
+            return accounts.putIfAbsent(account.id(), account) == null;
         }
     }
 
