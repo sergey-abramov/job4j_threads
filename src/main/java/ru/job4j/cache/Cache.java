@@ -1,7 +1,6 @@
 package ru.job4j.cache;
 
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Cache {
@@ -13,7 +12,6 @@ public class Cache {
 
     public boolean update(Base model) {
         return memory.computeIfPresent(model.getId(), (id, stored) -> {
-            stored = memory.get(model.getId());
             if (stored.getVersion() != model.getVersion()) {
                 throw new OptimisticException("Versions are not equal");
             }
