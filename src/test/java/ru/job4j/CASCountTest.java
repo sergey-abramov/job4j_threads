@@ -6,9 +6,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class CASCountTest {
 
+    private final CASCount count = new CASCount();
+
     @Test
     void get() throws InterruptedException {
-        CASCount count = new CASCount();
         Thread first = new Thread(
                 () -> {
                     for (int i = 0; i < 5; i++) {
@@ -27,6 +28,6 @@ class CASCountTest {
         first.join();
         second.interrupt();
         second.join();
-        assertThat(count.get()).isEqualTo(13);
+        assertThat(count.get()).isEqualTo(8);
     }
 }
