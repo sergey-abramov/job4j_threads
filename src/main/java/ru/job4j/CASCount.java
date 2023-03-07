@@ -4,10 +4,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class CASCount {
 
-    private final AtomicInteger count = new AtomicInteger(0);
+    private final AtomicInteger count = new AtomicInteger();
 
     public void increment() {
-        count.incrementAndGet();
+        int increment;
+        int integer;
+        do {
+            integer = count.get();
+            increment = integer + 1;
+        } while (!count.compareAndSet(integer, increment));
     }
 
     public int get() {
