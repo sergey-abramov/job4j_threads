@@ -12,6 +12,12 @@ class ForkJoinTest {
     }
 
     @Test
+    void findIndexfFor10elements() {
+        Integer[] array = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        assertThat(ForkJoin.find(array, 10)).isEqualTo(9);
+    }
+
+    @Test
     void findIndexfFor15elements() {
         Integer[] array = new Integer[]{
                 1, 2, 3, 4, 5,

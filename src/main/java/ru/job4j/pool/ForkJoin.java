@@ -34,7 +34,7 @@ public class ForkJoin<T> extends RecursiveTask<Integer> {
 
     public int findIndex() {
         int rsl = -1;
-        for (int i = start; i < finish; i++) {
+        for (int i = start; i <= finish; i++) {
             if (array[i].equals(value)) {
                 rsl = i;
                 break;
